@@ -34,25 +34,13 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown("<h1 style='color: #FF385C; text-align: center;'>Your Personal Airbnb Co-Host</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #6b7280;'>Quick replies built straight from your property details.</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #6b7280;'>Quick, friendly replies tailored to whoever is staying at your place.</p>", unsafe_allow_html=True)
 
 st.markdown("---")
 
-# Host Property Knowledge Base (Host can fill these out with their actual info)
-st.markdown("### 📋 Step 1: Your Property Details")
-col1, col2 = st.columns(2)
-with col1:
-    checkin_info = st.text_input("Check-in instructions", "3 PM using the front door keypad")
-    wifi_info = st.text_input("Wi-Fi details", "Network: HomeWiFi, Password: welcome123")
-with col2:
-    parking_info = st.text_input("Parking rules", "Free parking right on the premises")
-    pool_info = st.text_input("Pool / Extra info", "Pool is open 8 AM to 10 PM. No glass allowed.")
+st.markdown("### Property and Guest Setup")
 
-st.markdown("---")
-
-st.markdown("### 💬 Step 2: Guest Message")
-
-airbnb_url = st.text_input("Airbnb listing link", placeholder="https://www.airbnb.com/rooms/12345678")
+airbnb_url = st.text_input("Paste your Airbnb listing link", placeholder="https://www.airbnb.com/rooms/12345678")
 
 guest_profile = st.selectbox(
     "Who is messaging you?",
@@ -63,44 +51,44 @@ guest_profile = st.selectbox(
         "Couple taking a trip",
         "Someone bringing a pet",
         "First-time Airbnb guest"
+        "Other"
     ]
 )
 
 guest_message = st.text_area(
     "What did they say in their message?", 
-    placeholder="Type their message here, like 'Is there a baby changing station?' or 'Can food be delivered to the pool?'"
+    placeholder="Type their message here, like what time is check-in or where do I park"
 )
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-if st.button("Generate Custom Reply"):
+if st.button("Generate Friendly Reply"):
     if not airbnb_url or not guest_message:
-        st.error("Please fill out your listing link and the guest's message.")
+        st.error("Please fill out both boxes before generating a reply.")
     else:
-        with st.spinner("Putting together a friendly reply..."):
+        with st.spinner("Writing a warm reply for you..."):
             
-            incoming = guest_message.lower()
+          incoming = guest_message.lower()
             
-            # Dynamic matching against the host's actual property inputs
-            if "check" in incoming or "arrive" in incoming or "time" in incoming or "door" in incoming or "key" in incoming:
-                core = f"Check-in is super easy: {checkin_info}."
+            if "check" in incoming or "arrive" in incoming or "time" in incoming:
+                core = "Check-in starts right at 3 PM using our easy keypad lock on the front door, so you can arrive whenever it suits you best."
             elif "wifi" in incoming or "internet" in incoming or "password" in incoming:
-                core = f"Here are the internet details: {wifi_info}."
+                core = "You can find all the high-speed Wi-Fi details and passwords right on the welcome sign near the front entrance."
             elif "park" in incoming or "car" in incoming or "drive" in incoming:
-                core = f"Regarding parking: {parking_info}."
-            elif "pool" in incoming or "swim" in incoming or "water" in incoming or "food" in incoming:
-                core = f"To answer your question about the pool area: {pool_info}."
+                core = "You have free parking available right on the premises during your entire stay."
+            elif "baby" in incoming or "child" in incoming or "changing" in incoming:
+                core = "We have a portable baby changing station and pack-and-play set up and ready for your little one to use."
+            elif "pool" in incoming or "food" in incoming or "eat" in incoming:
+                core = "While we don't offer direct food service down by the pool, there are some amazing local spots nearby that deliver right to the property."
             else:
-                # Fallback that incorporates the guest's custom message directly so it never sounds generic
-                core = f"Thanks so much for asking about that! To answer your question about '{guest_message}': everything is fully prepared for your stay."
+                core = f"Thanks so much for asking about that! Everything is fully prepared and ready for your stay."
 
-            # Friendly tone variations based on guest profile
             if guest_profile == "Family with kids":
                 opener = "Hey there! We are super excited to host you and your family."
-                ending = " We made sure everything is comfy and kid-friendly for your crew."
+                ending = " We made sure everything is comfy and kid-friendly for your family."
             elif guest_profile == "Remote worker or business traveler":
                 opener = "Hi! Thanks for choosing our spot for your trip."
-                ending = " We know having a smooth setup and a quiet space to focus is super important."
+                ending = " We know having good Wi-Fi and a quiet space to focus is super important."
             elif guest_profile == "Couple taking a trip":
                 opener = "Hi there! We are so thrilled to host your getaway."
                 ending = " We hope you both have an amazing, relaxing time together."
