@@ -1,9 +1,7 @@
 import streamlit as st
 
-# Page configuration
-st.set_page_config(page_title="Airbnb AI Co-Host", page_icon="🏡", layout="centered")
+st.set_page_config(page_title="Airbnb Co-Host", page_icon="🏡", layout="centered")
 
-# Custom CSS for a bright, modern look
 st.markdown("""
     <style>
     .main {
@@ -35,79 +33,73 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Header
-st.markdown("<h1 style='color: #FF385C; text-align: center;'>🏡 Personalized Airbnb Co-Host</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #6b7280;'>Smart template replies tailored for every type of guest (No API Key Required).</p>", unsafe_allow_html=True)
+st.markdown("<h1 style='color: #FF385C; text-align: center;'>Your Personal Airbnb Co-Host</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #6b7280;'>Quick, friendly replies tailored to whoever is staying at your place.</p>", unsafe_allow_html=True)
 
 st.markdown("---")
 
-st.markdown("### Property & Message Setup")
+st.markdown("### Property and Guest Setup")
 
-# Input fields
-airbnb_url = st.text_input("🔗 Airbnb Listing URL", placeholder="https://www.airbnb.com/rooms/12345678")
+airbnb_url = st.text_input("Paste your Airbnb listing link", placeholder="https://www.airbnb.com/rooms/12345678")
 
 guest_profile = st.selectbox(
-    "👤 Who is the guest?",
+    "Who is messaging you?",
     [
-        "General Guest",
-        "Family with Kids",
-        "Business Traveler / Remote Worker",
-        "Couple on Vacation",
-        "Pet Owner",
-        "First-Time Airbnb Guest"
+        "Regular guest",
+        "Family with kids",
+        "Remote worker or business traveler",
+        "Couple taking a trip",
+        "Someone bringing a pet",
+        "First-time Airbnb guest"
     ]
 )
 
 guest_message = st.text_area(
-    "💬 Guest's Message", 
-    placeholder="Type or paste the guest's message here (e.g., 'What time is check-in?')"
+    "What did they say in their message?", 
+    placeholder="Type their message here, like what time is check-in or where do I park"
 )
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-if st.button("✨ Generate Custom Reply"):
+if st.button("Generate Friendly Reply"):
     if not airbnb_url or not guest_message:
-        st.error("⚠️ Please fill in both the Airbnb Listing URL and the guest message.")
+        st.error("Please fill out both boxes before generating a reply.")
     else:
-        with st.spinner("🏡 Crafting your tailored host response..."):
+        with st.spinner("Writing a warm reply for you..."):
             
-            # Smart profile-based response builder (No API Key needed)
-            message_lower = guest_message.lower()
+            incoming = guest_message.lower()
             
-            # Base response depending on the core question
-            if "check-in" in message_lower or "arrive" in message_lower:
-                core_answer = "Standard check-in is at 3:00 PM or anytime after using our self-check-in keypad lock. I will send you the door code on the morning of your arrival!"
-            elif "wifi" in message_lower or "internet" in message_lower:
-                core_answer = "Our high-speed Wi-Fi network details and password are conveniently located on the welcome sign right inside the front door."
-            elif "parking" in message_lower or "car" in message_lower:
-                core_answer = "Free parking is available right on the premises for your convenience."
+            if "check" in incoming or "arrive" in incoming or "time" in incoming:
+                core = "Check-in starts right at 3 PM using our easy keypad lock on the front door, so you can arrive whenever it suits you best."
+            elif "wifi" in incoming or "internet" in incoming or "password" in incoming:
+                core = "You can find all the high-speed Wi-Fi details and passwords right on the welcome sign near the front entrance."
+            elif "park" in incoming or "car" in incoming or "drive" in incoming:
+                core = "You have free parking available right on the premises during your entire stay."
             else:
-                core_answer = f"Thank you so much for reaching out! Regarding your question about '{guest_message}', everything is set up and ready for your stay."
+                core = f"Thanks so much for reaching out about that! Everything is fully ready for your stay."
 
-            # Customize greeting/tone based on guest profile
-            if guest_profile == "Family with Kids":
-                intro = "Hi there! We are so excited to host you and your family."
-                extra = " We've made sure the space is cozy, safe, and family-friendly for everyone."
-            elif guest_profile == "Business Traveler / Remote Worker":
-                intro = "Hello! Thanks for choosing our space for your trip."
-                extra = " We know how important reliable Wi-Fi and a quiet environment are for productivity."
-            elif guest_profile == "Couple on Vacation":
-                intro = "Hi! We are thrilled to host your getaway."
-                extra = " We hope you have a wonderfully relaxing and memorable time together."
-            elif guest_profile == "Pet Owner":
-                intro = "Hello! We are delighted to welcome you and your furry friend."
-                extra = " We love hosting pets and hope they enjoy the stay just as much as you do."
-            elif guest_profile == "First-Time Airbnb Guest":
-                intro = "Hi there! A special welcome to Airbnb—we are honored to be your first stay!"
-                extra = " If you have any questions about how anything works during your stay, please don't hesitate to ask."
+            if guest_profile == "Family with kids":
+                opener = "Hey there! We are super excited to host you and your family."
+                ending = " We made sure everything is comfy and kid-friendly for your crew."
+            elif guest_profile == "Remote worker or business traveler":
+                opener = "Hi! Thanks for choosing our spot for your trip."
+                ending = " We know having good Wi-Fi and a quiet space to focus is super important."
+            elif guest_profile == "Couple taking a trip":
+                opener = "Hi there! We are so thrilled to host your getaway."
+                ending = " We hope you both have an amazing, relaxing time together."
+            elif guest_profile == "Someone bringing a pet":
+                opener = "Hello! We are super excited to welcome you and your furry friend."
+                ending = " We love hosting pets and hope they love the space too."
+            elif guest_profile == "First-time Airbnb guest":
+                opener = "Hey! A huge welcome to Airbnb—we are honored to be your very first stay."
+                ending = " If you need help with anything at all during your trip, just let us know."
             else:
-                intro = "Hi there! Thanks so much for reaching out."
-                extra = " We are looking forward to hosting you."
+                opener = "Hey there! Thanks so much for reaching out."
+                ending = " We are looking forward to having you stay with us."
 
-            # Final composed response
-            reply_text = f"{intro} {core_answer}{extra} Let me know if you need anything else before you arrive!"
+            final_reply = f"{opener} {core}{ending} Let me know if you need anything else before you head over!"
 
             st.markdown("---")
-            st.markdown("### 🚀 Personal Reply Ready to Send:")
-            st.success(reply_text)
-            st.info("💡 Copy and paste this directly into your Airbnb chat!")
+            st.markdown("### Ready to Copy and Send:")
+            st.success(final_reply)
+            st.info("You can copy this text and drop it right into your Airbnb chat.")
