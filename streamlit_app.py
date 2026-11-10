@@ -70,7 +70,7 @@ if st.button("Generate Friendly Reply"):
             
           incoming = guest_message.lower()
             
-            if "check" in incoming or "arrive" in incoming or "time" in incoming:
+            if "check" in incoming or "arrive" in incoming or "time" in incoming or "door" in incoming or "key" in incoming:
                 core = "Check-in starts right at 3 PM using our easy keypad lock on the front door, so you can arrive whenever it suits you best."
             elif "wifi" in incoming or "internet" in incoming or "password" in incoming:
                 core = "You can find all the high-speed Wi-Fi details and passwords right on the welcome sign near the front entrance."
