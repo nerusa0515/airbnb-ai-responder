@@ -1,7 +1,4 @@
 import streamlit as st
-import openai
-from bs4 import BeautifulSoup
-import requests
 
 # Page configuration
 st.set_page_config(page_title="Airbnb AI Co-Host", page_icon="🏡", layout="centered")
@@ -39,8 +36,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Header
-st.markdown("<h1 style='color: #FF385C; text-align: center;'>🏡 Personalized Airbnb AI Co-Host</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #6b7280;'>Warm, custom-tailored replies for every type of guest.</p>", unsafe_allow_html=True)
+st.markdown("<h1 style='color: #FF385C; text-align: center;'>🏡 Personalized Airbnb Co-Host</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #6b7280;'>Smart template replies tailored for every type of guest (No API Key Required).</p>", unsafe_allow_html=True)
 
 st.markdown("---")
 
@@ -63,66 +60,54 @@ guest_profile = st.selectbox(
 
 guest_message = st.text_area(
     "💬 Guest's Message", 
-    placeholder="Paste the guest's message here (e.g., 'What time is check-in and is the neighborhood quiet?')"
+    placeholder="Type or paste the guest's message here (e.g., 'What time is check-in?')"
 )
-
-openai_api_key = st.text_input("🔑 OpenAI API Key", type="password", placeholder="sk-proj-...")
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-if st.button("✨ Generate Personalized AI Response"):
-    if not airbnb_url or not guest_message or not openai_api_key:
-        st.error("⚠️ Please complete all fields above.")
+if st.button("✨ Generate Custom Reply"):
+    if not airbnb_url or not guest_message:
+        st.error("⚠️ Please fill in both the Airbnb Listing URL and the guest message.")
     else:
-        with st.spinner("🤖 Crafting a personalized, friendly reply..."):
-            try:
-                headers = {"User-Agent": "Mozilla/5.0"}
-                response = requests.get(airbnb_url, headers=headers)
-                
-                if response.status_code != 200:
-                    st.error("❌ Could not read the Airbnb URL. Make sure it's a public link.")
-                else:
-                    soup = BeautifulSoup(response.text, 'html.parser')
-                    title = soup.find("h1").text if soup.find("h1") else "Airbnb Listing"
-                    description_blocks = [p.text for p in soup.find_all("p")]
-                    raw_content = " ".join(description_blocks)[:4000]
-                    
-                    client = openai.OpenAI(api_key=openai_api_key)
-                    
-                    system_prompt = f"""
-                    You are an exceptionally warm, hospitable, and accommodating Airbnb superhost for this property: {title}.
-                    
-                    Here is the reference listing information:
-                    {raw_content}
-                    
-                    Guest Profile Type: {guest_profile}
-                    
-                    Instructions for Tone & Personalization:
-                    - **Be ultra-friendly and accommodating:** Match the guest's profile persona seamlessly.
-                      * If 'Family with Kids': Emphasize safety, comfort, child-friendly amenities, or local family activities.
-                      * If 'Business Traveler': Keep answers crisp, highlighting Wi-Fi reliability, quiet spaces, and smooth check-in.
-                      * If 'Couple on Vacation': Add a romantic, cozy, and welcoming vibe.
-                      * If 'Pet Owner': Express enthusiasm for their pet and mention any relevant pet amenities/rules gently.
-                      * If 'First-Time Airbnb Guest': Be reassuring, helpful, and walk them gently through the process.
-                    - **Accuracy First:** Answer their exact question using ONLY details from the listing.
-                    - **Missing Info Handling:** If a detail is missing, say: "I want to make sure I give you the exact details, so I'm checking on that for you right now!"
-                    - Keep it polished, natural, and delightful to read.
-                    """
-                    
-                    completion = client.chat.completions.create(
-                        model="gpt-4o-mini",
-                        messages=[
-                            {"role": "system", "content": system_prompt},
-                            {"role": "user", "content": guest_message}
-                        ]
-                    )
-                    
-                    reply_text = completion.choices[0].message.content
-                    
-                    st.markdown("---")
-                    st.markdown("### 🚀 Personal Reply Ready to Send:")
-                    st.success(reply_text)
-                    st.info("💡 Copy and paste this directly into your Airbnb chat!")
-                    
-            except Exception as e:
-                st.error(f"An error occurred: {e}")
+        with st.spinner("🏡 Crafting your tailored host response..."):
+            
+            # Smart profile-based response builder (No API Key needed)
+            message_lower = guest_message.lower()
+            
+            # Base response depending on the core question
+            if "check-in" in message_lower or "arrive" in message_lower:
+                core_answer = "Standard check-in is at 3:00 PM or anytime after using our self-check-in keypad lock. I will send you the door code on the morning of your arrival!"
+            elif "wifi" in message_lower or "internet" in message_lower:
+                core_answer = "Our high-speed Wi-Fi network details and password are conveniently located on the welcome sign right inside the front door."
+            elif "parking" in message_lower or "car" in message_lower:
+                core_answer = "Free parking is available right on the premises for your convenience."
+            else:
+                core_answer = f"Thank you so much for reaching out! Regarding your question about '{guest_message}', everything is set up and ready for your stay."
+
+            # Customize greeting/tone based on guest profile
+            if guest_profile == "Family with Kids":
+                intro = "Hi there! We are so excited to host you and your family."
+                extra = " We've made sure the space is cozy, safe, and family-friendly for everyone."
+            elif guest_profile == "Business Traveler / Remote Worker":
+                intro = "Hello! Thanks for choosing our space for your trip."
+                extra = " We know how important reliable Wi-Fi and a quiet environment are for productivity."
+            elif guest_profile == "Couple on Vacation":
+                intro = "Hi! We are thrilled to host your getaway."
+                extra = " We hope you have a wonderfully relaxing and memorable time together."
+            elif guest_profile == "Pet Owner":
+                intro = "Hello! We are delighted to welcome you and your furry friend."
+                extra = " We love hosting pets and hope they enjoy the stay just as much as you do."
+            elif guest_profile == "First-Time Airbnb Guest":
+                intro = "Hi there! A special welcome to Airbnb—we are honored to be your first stay!"
+                extra = " If you have any questions about how anything works during your stay, please don't hesitate to ask."
+            else:
+                intro = "Hi there! Thanks so much for reaching out."
+                extra = " We are looking forward to hosting you."
+
+            # Final composed response
+            reply_text = f"{intro} {core_answer}{extra} Let me know if you need anything else before you arrive!"
+
+            st.markdown("---")
+            st.markdown("### 🚀 Personal Reply Ready to Send:")
+            st.success(reply_text)
+            st.info("💡 Copy and paste this directly into your Airbnb chat!")
